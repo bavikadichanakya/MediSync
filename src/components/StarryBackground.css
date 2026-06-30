@@ -1,0 +1,72 @@
+.starry-bg-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #020202 0%, #0a0a0a 100%);
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #fff;
+  animation: twinkle 3s infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
+.comet-container {
+  position: absolute;
+  width: 150px;
+  height: 2px;
+  transform: rotate(-45deg);
+  animation: falling-star 5s linear infinite;
+  opacity: 0;
+}
+
+.comet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), #fff);
+  border-radius: 50%;
+  box-shadow: 0 0 10px #fff;
+}
+
+.comet::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 4px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+@keyframes falling-star {
+  0% {
+    transform: translate(300px, -300px) rotate(-45deg);
+    opacity: 1;
+  }
+  20% {
+    transform: translate(-300px, 300px) rotate(-45deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-300px, 300px) rotate(-45deg);
+    opacity: 0;
+  }
+}

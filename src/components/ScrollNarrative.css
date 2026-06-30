@@ -1,0 +1,264 @@
+.narrative-container {
+  height: 500vh;
+  position: relative;
+  background-color: var(--color-bg);
+}
+
+.sticky-background {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  z-index: 0;
+  background-color: #000;
+}
+
+.narrative-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Timeline UI */
+.timeline-ui {
+  position: fixed;
+  top: 50%;
+  left: 40px;
+  transform: translateY(-50%);
+  height: 40vh;
+  width: 4px;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+}
+
+.timeline-track {
+  width: 2px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--color-accent);
+  box-shadow: 0 0 10px var(--color-accent);
+  border-radius: 4px;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-text);
+  background: rgba(0,0,0,0.5);
+  padding: 1rem 2rem;
+  border-radius: 99px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.content-layers {
+  position: relative;
+  z-index: 10;
+  margin-top: -100vh;
+}
+
+.scroll-section {
+  height: 125vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 12vw;
+}
+
+.scroll-section.right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.scroll-section.right .text-kicker {
+  flex-direction: row-reverse;
+}
+
+/* Transparent Typography Layout */
+.text-content {
+  padding: 0;
+  max-width: 850px;
+  background: transparent;
+}
+
+.text-kicker {
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.text-kicker::before {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 2px;
+  background-color: var(--color-accent);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.text-content h1, .text-content h2 {
+  font-family: var(--font-serif);
+  font-size: 5rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-bottom: 2rem;
+  color: var(--color-text);
+  line-height: 1.1;
+  text-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.text-content p.body-text {
+  font-family: var(--font-main);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  max-width: 550px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.scroll-section.right .text-content p.body-text {
+  margin-left: auto;
+}
+
+/* Ultra-Glassmorphism Buttons */
+.cta-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 3.5rem;
+  align-items: center;
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.03); /* Extremely transparent */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(32px) saturate(150%);
+  -webkit-backdrop-filter: blur(32px) saturate(150%);
+  color: var(--color-text);
+  font-family: var(--font-main);
+  font-size: 1.125rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 99px;
+  cursor: pointer;
+  /* Emulates the strong rim lighting from the image */
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.3),
+    inset 1.5px 1.5px 3px rgba(255, 255, 255, 0.7),
+    inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.btn-glass.icon-only {
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.btn-glass svg {
+  flex-shrink: 0;
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.4),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.9),
+    inset -1.5px -1.5px 3px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Scroll to Top Button */
+.btn-scroll-top {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--color-text);
+  font-family: var(--font-main);
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 99px;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, background 0.3s ease;
+}
+
+.btn-scroll-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  animation: bounce-up 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes bounce-up {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.btn-scroll-top:hover {
+  background: rgba(255, 255, 255, 0.15);
+  animation-play-state: paused;
+}
+
+@media (max-width: 768px) {
+  .timeline-ui {
+    display: none;
+  }
+  .scroll-section {
+    padding: 0 6vw;
+  }
+  .text-content h1, .text-content h2 {
+    font-size: 3rem;
+  }
+  .text-content p.body-text {
+    font-size: 1.15rem;
+  }
+}
