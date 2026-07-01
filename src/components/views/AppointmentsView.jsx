@@ -5,6 +5,7 @@ import { generateDoctorHandover } from '../../lib/pdfGenerator';
 import { chatWithRecords } from '../../lib/aiService';
 import BorderGlow from '../BorderGlow';
 import ClickSpark from '../ClickSpark';
+import HospitalMap from '../HospitalMap';
 
 export default function AppointmentsView({ session }) {
   const [appointments, setAppointments] = useState([]);
@@ -52,12 +53,15 @@ export default function AppointmentsView({ session }) {
         setRecommendedDoctor(docMatch[1].replace(/[\[\]]/g, '').trim());
       }
 
-      const matches = [...answer.matchAll(/\[HOSPITAL\|(.*?)\|(.*?)\|(.*?)\|(.*?)\]/g)];
+      const matches = [...answer.matchAll(/\[HOSPITAL\|(.*?)\|(.*?)\|(.*?)\|(.*?)(\|(.*?)\|(.*?)\|(.*?)?)?\]/g)];
       const results = matches.map(m => ({
         name: m[1],
         distance: m[2],
         stars: parseInt(m[3]) || 5,
-        link: m[4]
+        url: m[4],
+        lat: parseFloat(m[6]),
+        lng: parseFloat(m[7]),
+        reviewSummary: m[8] ? m[8].replace(/^"|"$/g, '') : "A highly rated hospital."
       }));
       setAiResults(results);
     } catch (err) {
@@ -134,31 +138,8 @@ export default function AppointmentsView({ session }) {
         )}
         
         {aiResults.length > 0 && (
-          <div className="ai-results-grid">
-            {aiResults.map((hosp, i) => {
-              const renderStars = () => {
-                let starStr = '';
-                for (let s = 0; s < 5; s++) {
-                  starStr += s < hosp.stars ? '★' : '☆';
-                }
-                return starStr;
-              };
-              
-              return (
-                <div key={i} className="hospital-card" style={{ width: '100%', margin: 0 }}>
-                  <div className="hospital-details">
-                    <h4>{hosp.name}</h4>
-                    <div className="hospital-meta">
-                      <span className="distance">{hosp.distance}</span>
-                      <span className="stars">{renderStars()}</span>
-                    </div>
-                  </div>
-                  <a href={hosp.link} target="_blank" rel="noopener noreferrer" className="book-btn">
-                    Book Appointment
-                  </a>
-                </div>
-              );
-            })}
+          <div style={{ marginTop: '1rem' }}>
+            <HospitalMap hospitals={aiResults} />
           </div>
         )}
       </div>
