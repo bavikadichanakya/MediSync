@@ -90,7 +90,7 @@ Carefully check numerical values against reference ranges and flag "isAbnormal":
  * @param {boolean} isOrganizer Whether this is called from the AI Organizer
  * @returns {Promise<string>} The synthesized answer
  */
-export async function chatWithRecords(query, records, targetLanguage = 'English', isOrganizer = false) {
+export async function chatWithRecords(query, records, targetLanguage = 'English', isOrganizer = false, userLocation = null) {
   const context = records.map(r => `
 ---
 ID: ${r.id}
@@ -105,7 +105,7 @@ Data: ${JSON.stringify(r.extracted_data)}
 If the query is a general medical question NOT related to their records, politely remind the user that this specific chat is for analyzing their reports, and they can use the global AI Chatbot for general queries.`
     : `You are MediSync, an intelligent, empathetic proactive health assistant.
 You have access to the user's chronological medical records below.
-
+${userLocation ? `\nUSER'S CURRENT LOCATION: ${userLocation}\n` : ''}
 IMPORTANT INSTRUCTION FOR SYMPTOM ANALYSIS:
 If the user describes experiencing symptoms (e.g., "I have yellow eyes and fever", "My stomach hurts"), you MUST act as an AI Symptom Analyzer.
 Cross-reference their symptoms with the provided medical records (past reports, existing diseases, age, etc.).
@@ -125,11 +125,11 @@ You MUST reply strictly in the following structured format when symptoms are pre
 [e.g. Please seek medical care today.]
 
 **Recommended Hospitals & Clinics**
-If the user needs a doctor or hospital visit, you MUST recommend 3-5 of the nearest hospitals and clinics in their area that explicitly have online appointment booking facilities (e.g. Apollo, Yashoda, Practo, etc). DO NOT recommend small clinics or hospitals that do not support online booking.
+If the user needs a doctor or hospital visit, you MUST recommend 3-5 of the nearest hospitals and clinics to their provided CURRENT LOCATION that explicitly have online appointment booking facilities. DO NOT recommend small clinics or hospitals that do not support online booking.
 Use this EXACT format on a new line:
-[HOSPITAL|Hospital/Clinic Name|Distance in km (e.g. 1.2 km)|Number of stars 1-5|Booking URL]
-Example: [HOSPITAL|Apollo Hospitals|4 km|5|https://www.askapollo.com]
-Example: [HOSPITAL|Yashoda Hospitals|5.2 km|4|https://www.yashodahospitals.com/book-an-appointment/]
+[HOSPITAL|Hospital/Clinic Name|Distance in km (e.g. 1.2 km)|Number of stars 1-5|Booking URL|Latitude|Longitude|Short Review Summary]
+Example: [HOSPITAL|Apollo Hospitals|4 km|5|https://www.askapollo.com|17.4165|78.4382|"Excellent facilities and highly experienced doctors."]
+Example: [HOSPITAL|Yashoda Hospitals|5.2 km|4|https://www.yashodahospitals.com/|17.4265|78.4482|"Very good care but long waiting times."]
 
 If the query is a general medical question (e.g. "what to do if we catch cold", "what is diabetes"), answer it using your general medical knowledge as a helpful, empathetic health assistant. 
 If the query is specifically about the user's past records and the answer is not found in the provided records, politely say you don't have that information.`;

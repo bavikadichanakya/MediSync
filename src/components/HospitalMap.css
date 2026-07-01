@@ -1,0 +1,111 @@
+.hospital-map-wrapper {
+  margin-top: 15px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(25, 25, 35, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-map-container {
+  height: 250px;
+  width: 100%;
+  z-index: 1; /* Keep leaflet under modals */
+}
+
+/* Fix popup styling to match dark theme */
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hospital-cards-grid {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 15px;
+  /* hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hospital-cards-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.hospital-card {
+  flex: 0 0 250px;
+  background: var(--bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.hospital-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.hospital-card-img {
+  height: 120px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.hospital-rating {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.hospital-card-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.hospital-card-content h4 {
+  margin: 0 0 5px 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.hospital-distance {
+  margin: 0 0 8px 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.hospital-review {
+  margin: 0 0 12px 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  flex: 1;
+}
+
+.btn-book {
+  text-align: center;
+  background: var(--accent-primary);
+  color: white;
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.btn-book:hover {
+  background: var(--accent-hover);
+}

@@ -5,6 +5,7 @@ import { chatWithRecords, generateSpeech } from '../lib/aiService';
 import BorderGlow from './BorderGlow';
 import ClickSpark from './ClickSpark';
 import StarryBackground from './StarryBackground';
+import HospitalMap from './HospitalMap';
 import './AIChatbot.css';
 
 const LANGUAGES = [
@@ -26,6 +27,7 @@ export default function AIChatbot({ session }) {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
+  const [userLocation, setUserLocation] = useState(null);
   
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -61,6 +63,26 @@ export default function AIChatbot({ session }) {
         recognitionRef.current.stop();
       }
     };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          if (data && data.address) {
+            const city = data.address.city || data.address.town || data.address.village || data.address.county;
+            setUserLocation(city ? `${city} (Lat: ${latitude}, Lng: ${longitude})` : `Lat: ${latitude}, Lng: ${longitude}`);
+          }
+        } catch (e) {
+          setUserLocation(`Lat: ${latitude}, Lng: ${longitude}`);
+        }
+      }, (error) => {
+        console.warn("Geolocation denied or error:", error);
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -124,49 +146,58 @@ export default function AIChatbot({ session }) {
   };
 
   const formatMessage = (text) => {
-    return text.split('\n').map((line, i) => {
-      // Check for hospital tag
-      const hospitalMatch = line.match(/\[HOSPITAL\|(.*?)\|(.*?)\|(.*?)\|(.*?)\]/);
+    const lines = text.split('\n');
+    const hospitalArray = [];
+    const elements = [];
+
+    lines.forEach((line, i) => {
+      // Support both the old format and the new format gracefully
+      const hospitalMatch = line.match(/\[HOSPITAL\|(.*?)\|(.*?)\|(.*?)\|(.*?)(\|(.*?)\|(.*?)\|(.*?)?)?\]/);
       if (hospitalMatch) {
-        const [_, name, distance, stars, link] = hospitalMatch;
-        const starNum = parseInt(stars) || 5;
-        const renderStars = () => {
-          let starStr = '';
-          for (let s = 0; s < 5; s++) {
-            starStr += s < starNum ? '★' : '☆';
-          }
-          return starStr;
-        };
+        const name = hospitalMatch[1];
+        const distance = hospitalMatch[2];
+        const stars = parseInt(hospitalMatch[3]) || 5;
+        const url = hospitalMatch[4];
         
-        return (
-          <div key={i} className="hospital-card">
-            <div className="hospital-details">
-              <h4>{name}</h4>
-              <div className="hospital-meta">
-                <span className="distance">{distance}</span>
-                <span className="stars">{renderStars()}</span>
-              </div>
+        // If we have lat/lng from the new prompt format
+        if (hospitalMatch[6] && hospitalMatch[7]) {
+          hospitalArray.push({
+            name, distance, stars, url,
+            lat: parseFloat(hospitalMatch[6]),
+            lng: parseFloat(hospitalMatch[7]),
+            reviewSummary: hospitalMatch[8] ? hospitalMatch[8].replace(/^"|"$/g, '') : "A highly rated hospital."
+          });
+        } else {
+          // Fallback to text card for old format
+          elements.push(
+            <div key={`hosp-${i}`} className="hospital-card-text-only" style={{ background: 'var(--bg-surface)', padding: '10px', borderRadius: '8px', marginBottom: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <h4 style={{ margin: '0 0 5px 0' }}>{name}</h4>
+              <p style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{distance} | {stars} Stars</p>
+              <a href={url} target="_blank" rel="noopener noreferrer" style={{ background: 'var(--accent-primary)', color: 'white', padding: '5px 10px', borderRadius: '5px', textDecoration: 'none', fontSize: '0.85rem' }}>Book Appointment</a>
             </div>
-            <a href={link} target="_blank" rel="noopener noreferrer" className="book-btn">
-              Book Appointment
-            </a>
-          </div>
+          );
+        }
+      } else {
+        const parts = line.split(/(\*\*.*?\*\*)/g);
+        elements.push(
+          <React.Fragment key={i}>
+            {parts.map((part, j) => {
+              if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={j} style={{ color: '#fbbf24' }}>{part.slice(2, -2)}</strong>;
+              }
+              return part;
+            })}
+            {i !== lines.length - 1 && <br />}
+          </React.Fragment>
         );
       }
-
-      const parts = line.split(/(\*\*.*?\*\*)/g);
-      return (
-        <React.Fragment key={i}>
-          {parts.map((part, j) => {
-            if (part.startsWith('**') && part.endsWith('**')) {
-              return <strong key={j} style={{ color: '#fbbf24' }}>{part.slice(2, -2)}</strong>;
-            }
-            return part;
-          })}
-          {i !== text.split('\n').length - 1 && <br />}
-        </React.Fragment>
-      );
     });
+
+    if (hospitalArray.length > 0) {
+      elements.push(<HospitalMap key="hospital-map" hospitals={hospitalArray} />);
+    }
+
+    return elements;
   };
 
   const scrollToBottom = () => {
@@ -190,7 +221,7 @@ export default function AIChatbot({ session }) {
 
     try {
       const { data: records } = await supabase.from('medical_records').select('*');
-      const answer = await chatWithRecords(userMsg, records || [], selectedLanguage.value);
+      const answer = await chatWithRecords(userMsg, records || [], selectedLanguage.value, false, userLocation);
       setMessages(prev => [...prev, { role: 'assistant', content: answer }]);
       // Auto-play audio response via Sarvam TTS ONLY if input was by voice
       if (wasVoice) {
