@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 
-// We initialize the client inside functions to ensure env vars are loaded.
-const getClient = () => {
+// We initialize the API key inside functions to ensure env vars are loaded.
+const getAiClient = () => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   if (!apiKey) {
     console.error("Missing VITE_GEMINI_API_KEY in environment variables.");
@@ -19,7 +19,7 @@ const getClient = () => {
  * @returns {Promise<Object>} The extracted JSON structure
  */
 export async function extractDocumentData(base64Data, mimeType) {
-  const ai = getClient();
+  const apiKey = getApiKey();
   
   const prompt = `
 You are a highly intelligent medical data extraction assistant.
@@ -59,28 +59,20 @@ Carefully check numerical values against reference ranges and flag "isAbnormal":
 `;
 
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: prompt },
-            {
-              inlineData: {
-                data: base64Data,
-                mimeType: mimeType
-              }
-            }
-          ]
-        }
+        { role: 'user', parts: [
+          { text: prompt },
+          { inlineData: { data: base64Data, mimeType: mimeType } }
+        ]}
       ],
-      config: {
-        temperature: 0.1,
-      }
+      config: { temperature: 0.1 }
     });
 
     let text = response.text;
+    
     // Clean up potential markdown formatting
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
     
@@ -101,7 +93,7 @@ Carefully check numerical values against reference ranges and flag "isAbnormal":
  * @returns {Promise<string>} The synthesized answer
  */
 export async function chatWithRecords(query, records, targetLanguage = 'English', isOrganizer = false) {
-  const ai = getClient();
+  const apiKey = getApiKey();
   
   const context = records.map(r => `
 ---
@@ -163,13 +155,13 @@ ${query}
 `;
 
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
-      config: {
-        temperature: 0.3,
-      }
+      config: { temperature: 0.3 }
     });
+    
     return response.text;
   } catch (error) {
     console.error("Error generating chat response:", error);
@@ -235,7 +227,7 @@ export async function generateSpeech(text, languageCode) {
  * @returns {Promise<Object>} The structured health summary
  */
 export async function generateHealthSummary(profile, records) {
-  const ai = getClient();
+  const apiKey = getApiKey();
   
   const recordsContext = records.map(r => `
 ---
@@ -267,15 +259,14 @@ Return ONLY a valid JSON object strictly matching this schema. Do not output any
 }`;
 
   try {
+    const ai = getAiClient();
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
-      config: {
-        temperature: 0.1,
-      }
+      config: { temperature: 0.1 }
     });
-
-    let text = response.text; // Ensure we invoke if it's a function, wait SDK returns text as string or function? In earlier code it's response.text; Let's check line 173: return response.text; So it's a string property.
+    
+    let text = response.text;
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
     
     return JSON.parse(text);
