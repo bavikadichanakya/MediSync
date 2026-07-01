@@ -16,34 +16,48 @@ export default function UploadButton({ session, onUploadComplete }) {
     setIsUploading(true);
     
     try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64String = reader.result.split(',')[1];
-        
-        // 1. Extract data with Gemini
-        const extractedData = await extractDocumentData(base64String, file.type);
-        
-        // 2. Save to Supabase
-        const { error } = await supabase.from('medical_records').insert([
-          {
-            user_id: session.user.id,
-            title: file.name,
-            record_date: extractedData.documentDate || new Date().toISOString().split('T')[0],
-            extracted_data: extractedData
+      const base64String = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (reader.result) {
+            resolve(reader.result.split(',')[1]);
+          } else {
+            reject(new Error("Failed to read file"));
           }
-        ]);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
         
-        if (!error) {
-          if (onUploadComplete) onUploadComplete();
-        } else {
-          console.error(error);
-          alert("Error saving record to database.");
+      // 1. Extract data with Gemini
+      const extractedData = await extractDocumentData(base64String, file.type);
+      
+      // Validate date format (YYYY-MM-DD)
+      let recordDate = extractedData.documentDate;
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!recordDate || typeof recordDate !== 'string' || !dateRegex.test(recordDate)) {
+        recordDate = new Date().toISOString().split('T')[0];
+      }
+      
+      // 2. Save to Supabase
+      const { error } = await supabase.from('medical_records').insert([
+        {
+          user_id: session.user.id,
+          title: file.name,
+          record_date: recordDate,
+          extracted_data: extractedData
         }
-      };
-      reader.readAsDataURL(file);
+      ]);
+      
+      if (!error) {
+        if (onUploadComplete) onUploadComplete();
+      } else {
+        console.error("Supabase Error:", error);
+        alert(`Error saving record to database: ${error.message}`);
+      }
     } catch (err) {
-      console.error(err);
-      alert("Failed to extract data. Check your API key and file format.");
+      console.error("Upload Error:", err);
+      alert("Failed to process file. Please check the console for details.");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
