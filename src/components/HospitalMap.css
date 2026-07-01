@@ -14,10 +14,19 @@
 }
 
 /* Fix popup styling to match dark theme */
-.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+.hospital-map-wrapper .leaflet-popup-content-wrapper,
+.hospital-map-wrapper .leaflet-popup-tip {
   background: var(--bg-surface) !important;
   color: var(--text-primary) !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hospital-map-wrapper .leaflet-popup-content {
+  color: var(--text-primary) !important;
+}
+
+.hospital-map-wrapper .leaflet-popup-content strong {
+  color: var(--text-primary) !important;
 }
 
 .hospital-cards-grid {

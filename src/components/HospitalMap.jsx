@@ -59,10 +59,14 @@ export default function HospitalMap({ hospitals }) {
       <div className="hospital-cards-grid">
         {hospitals.map((hospital, idx) => (
           <div key={idx} className="hospital-card">
-            <div 
-              className="hospital-card-img" 
-              style={{ backgroundImage: `url('https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=300&q=80')` }}
-            >
+            <div className="hospital-card-img">
+              <iframe 
+                width="100%" 
+                height="100%" 
+                style={{ border: 0 }}
+                loading="lazy" 
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(hospital.name)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+              ></iframe>
               <div className="hospital-rating">⭐ {hospital.stars}</div>
             </div>
             <div className="hospital-card-content">
