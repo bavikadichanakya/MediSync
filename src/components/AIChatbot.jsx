@@ -173,7 +173,7 @@ export default function AIChatbot({ session }) {
             <div key={`hosp-${i}`} className="hospital-card-text-only" style={{ background: 'var(--bg-surface)', padding: '10px', borderRadius: '8px', marginBottom: '10px', border: '1px solid rgba(255,255,255,0.1)' }}>
               <h4 style={{ margin: '0 0 5px 0' }}>{name}</h4>
               <p style={{ margin: '0 0 10px 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{distance} | {stars} Stars</p>
-              <a href={url} target="_blank" rel="noopener noreferrer" style={{ background: 'var(--accent-primary)', color: 'white', padding: '5px 10px', borderRadius: '5px', textDecoration: 'none', fontSize: '0.85rem' }}>Book Appointment</a>
+              <a href={url} target="_blank" rel="noopener noreferrer" style={{ background: 'var(--accent-primary)', color: '#111111', padding: '5px 10px', borderRadius: '5px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>Book Appointment</a>
             </div>
           );
         }

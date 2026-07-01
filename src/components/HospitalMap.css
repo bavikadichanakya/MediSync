@@ -85,12 +85,12 @@
 .btn-book {
   text-align: center;
   background: var(--accent-primary);
-  color: white;
+  color: #111111;
   text-decoration: none;
   padding: 8px;
   border-radius: 6px;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   transition: background 0.2s;
 }
 
