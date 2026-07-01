@@ -125,11 +125,17 @@ export default function AIOrganizerView({ session }) {
     setIsSaving(true);
 
     try {
+      let recordDate = extractedData.documentDate;
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!recordDate || typeof recordDate !== 'string' || !dateRegex.test(recordDate)) {
+        recordDate = new Date().toISOString().split('T')[0];
+      }
+
       const { error } = await supabase.from('medical_records').insert([
         {
           user_id: session.user.id,
           title: extractedData.fileName || 'Uploaded Record',
-          record_date: extractedData.documentDate || new Date().toISOString().split('T')[0],
+          record_date: recordDate,
           extracted_data: extractedData
         }
       ]);

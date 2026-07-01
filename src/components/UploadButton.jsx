@@ -50,6 +50,7 @@ export default function UploadButton({ session, onUploadComplete }) {
       ]);
       
       if (!error) {
+        alert("Success! Your medical record has been analyzed and saved.");
         if (onUploadComplete) onUploadComplete();
       } else {
         console.error("Supabase Error:", error);
