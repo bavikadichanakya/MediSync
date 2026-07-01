@@ -124,6 +124,10 @@ You MUST reply strictly in the following structured format when symptoms are pre
 **Emergency level**
 [e.g. Please seek medical care today.]
 
+**Home Remedies & Immediate Steps**
+- [Suggestion 1, e.g. Drink plenty of warm fluids]
+- [Suggestion 2, e.g. Rest and avoid strenuous activity]
+
 **Recommended Hospitals & Clinics**
 If the user needs a doctor or hospital visit, you MUST recommend 3-5 of the nearest hospitals and clinics to their provided CURRENT LOCATION that explicitly have online appointment booking facilities. DO NOT recommend small clinics or hospitals that do not support online booking.
 Use this EXACT format on a new line:
