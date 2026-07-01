@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Ferrofluid from './Ferrofluid';
 import { supabase } from '../lib/supabaseClient';
-import { Activity, Folder, Calendar as CalendarIcon, LogOut, User, Scan, TrendingUp, Pill, Bell } from 'lucide-react';
+import { Activity, Folder, Calendar as CalendarIcon, LogOut, User, Scan, TrendingUp, Pill, Bell, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import TimelineView from './views/TimelineView';
 import TrendsView from './views/TrendsView';
 import FolderView from './views/FolderView';
@@ -19,6 +19,7 @@ export default function DashboardLayout({ session }) {
   const email = session?.user?.email || 'User';
   const [activeTab, setActiveTab] = useState('timeline');
   const [showAlerts, setShowAlerts] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   const renderView = () => {
     switch(activeTab) {
@@ -55,73 +56,83 @@ export default function DashboardLayout({ session }) {
       
       <div className="dashboard-layout">
         {/* Sidebar Navigation */}
-        <aside className="dashboard-sidebar">
+        <aside className={`dashboard-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
           <div className="sidebar-header">
-            <h2>MediSync</h2>
+            <h2 className="nav-text">MediSync</h2>
+            <button className="sidebar-toggle" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} title="Toggle Sidebar">
+              {isSidebarCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+            </button>
           </div>
           <nav className="sidebar-nav">
             <BorderGlow className="no-inner-glow" borderRadius={16} glowRadius={3} glowIntensity={0.4} edgeSensitivity={15} fillOpacity={0} style={{ width: '100%', display: 'flex' }}>
               <button 
                 className={`nav-btn full-width ${activeTab === 'timeline' ? 'active' : ''}`}
                 onClick={() => setActiveTab('timeline')}
+                title="Timeline"
               >
-                <Activity size={20}/> Timeline
+                <Activity size={20}/> <span className="nav-text">Timeline</span>
               </button>
             </BorderGlow>
             <BorderGlow className="no-inner-glow" borderRadius={16} glowRadius={3} glowIntensity={0.4} edgeSensitivity={15} fillOpacity={0} style={{ width: '100%', display: 'flex' }}>
               <button 
                 className={`nav-btn full-width ${activeTab === 'prescriptions' ? 'active' : ''}`}
                 onClick={() => setActiveTab('prescriptions')}
+                title="Prescriptions"
               >
-                <Pill size={20}/> Prescriptions
+                <Pill size={20}/> <span className="nav-text">Prescriptions</span>
               </button>
             </BorderGlow>
             <BorderGlow className="no-inner-glow" borderRadius={16} glowRadius={3} glowIntensity={0.4} edgeSensitivity={15} fillOpacity={0} style={{ width: '100%', display: 'flex' }}>
               <button 
                 className={`nav-btn full-width ${activeTab === 'trends' ? 'active' : ''}`}
                 onClick={() => setActiveTab('trends')}
+                title="Trends"
               >
-                <TrendingUp size={20}/> Trends
+                <TrendingUp size={20}/> <span className="nav-text">Trends</span>
               </button>
             </BorderGlow>
             <BorderGlow className="no-inner-glow" borderRadius={16} glowRadius={3} glowIntensity={0.4} edgeSensitivity={15} fillOpacity={0} style={{ width: '100%', display: 'flex' }}>
               <button 
                 className={`nav-btn full-width ${activeTab === 'folders' ? 'active' : ''}`}
                 onClick={() => setActiveTab('folders')}
+                title="Folders"
               >
-                <Folder size={20}/> Folders
+                <Folder size={20}/> <span className="nav-text">Folders</span>
               </button>
             </BorderGlow>
             <BorderGlow className="no-inner-glow" borderRadius={16} glowRadius={3} glowIntensity={0.4} edgeSensitivity={15} fillOpacity={0} style={{ width: '100%', display: 'flex' }}>
               <button 
                 className={`nav-btn full-width ${activeTab === 'appointments' ? 'active' : ''}`}
                 onClick={() => setActiveTab('appointments')}
+                title="Appointments"
               >
-                <CalendarIcon size={20}/> Appointments
+                <CalendarIcon size={20}/> <span className="nav-text">Appointments</span>
               </button>
             </BorderGlow>
             <BorderGlow className="no-inner-glow" borderRadius={16} glowRadius={3} glowIntensity={0.4} edgeSensitivity={15} fillOpacity={0} style={{ width: '100%', display: 'flex' }}>
               <button 
                 className={`nav-btn full-width ${activeTab === 'profile' ? 'active' : ''}`}
                 onClick={() => setActiveTab('profile')}
+                title="Profile"
               >
-                <User size={20}/> Profile
+                <User size={20}/> <span className="nav-text">Profile</span>
               </button>
             </BorderGlow>
             <BorderGlow className="no-inner-glow" borderRadius={16} glowRadius={3} glowIntensity={0.4} edgeSensitivity={15} fillOpacity={0} style={{ width: '100%', display: 'flex' }}>
               <button 
                 className={`nav-btn full-width ${activeTab === 'ai-organizer' ? 'active' : ''}`}
                 onClick={() => setActiveTab('ai-organizer')}
+                title="AI Organizer"
               >
-                <Scan size={20}/> AI Organizer
+                <Scan size={20}/> <span className="nav-text">AI Organizer</span>
               </button>
             </BorderGlow>
           </nav>
           
           <div className="sidebar-footer">
-            <p className="user-email">{email}</p>
-            <button className="btn-signout" onClick={() => supabase.auth.signOut()}>
-              <LogOut size={16}/> Sign Out
+            <p className="user-email nav-text">{email}</p>
+            <button className="btn-signout" onClick={() => supabase.auth.signOut()} title="Sign Out">
+              <LogOut size={16}/> <span className="nav-text">Sign Out</span>
             </button>
           </div>
         </aside>
