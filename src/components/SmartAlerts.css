@@ -99,6 +99,15 @@
   transform: translateY(-1px);
 }
 
+.alert-item.clickable {
+  cursor: pointer;
+}
+
+.alert-item.clickable:hover {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 .alert-icon-wrapper {
   flex-shrink: 0;
   width: 40px;

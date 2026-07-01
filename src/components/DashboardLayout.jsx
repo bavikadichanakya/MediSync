@@ -20,10 +20,21 @@ export default function DashboardLayout({ session }) {
   const [activeTab, setActiveTab] = useState('timeline');
   const [showAlerts, setShowAlerts] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [highlightedRecordId, setHighlightedRecordId] = useState(null);
   
+  const handleAlertClick = (alert) => {
+    setShowAlerts(false);
+    if (alert.recordId) {
+      setHighlightedRecordId(alert.recordId);
+      setActiveTab('timeline');
+    } else if (alert.type === 'appointment') {
+      setActiveTab('appointments');
+    }
+  };
+
   const renderView = () => {
     switch(activeTab) {
-      case 'timeline': return <TimelineView session={session} />;
+      case 'timeline': return <TimelineView session={session} highlightedRecordId={highlightedRecordId} />;
       case 'prescriptions': return <PrescriptionsView session={session} />;
       case 'trends': return <TrendsView session={session} />;
       case 'folders': return <FolderView session={session} />;
@@ -149,7 +160,7 @@ export default function DashboardLayout({ session }) {
           <Bell size={20} />
           <span className="bell-indicator"></span>
         </button>
-        {showAlerts && <SmartAlerts session={session} onClose={() => setShowAlerts(false)} />}
+        {showAlerts && <SmartAlerts session={session} onClose={() => setShowAlerts(false)} onAlertClick={handleAlertClick} />}
       </div>
 
       {/* Floating AI Assistant */}

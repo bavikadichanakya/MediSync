@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabaseClient';
 import { chatWithRecords } from '../../lib/aiService';
 import UploadButton from '../UploadButton';
 
-export default function TimelineView({ session }) {
+export default function TimelineView({ session, highlightedRecordId }) {
   const [records, setRecords] = useState([]);
   const [expandedRecord, setExpandedRecord] = useState(null);
   const [medicineQuery, setMedicineQuery] = useState('');
@@ -14,6 +14,18 @@ export default function TimelineView({ session }) {
   useEffect(() => {
     fetchRecords();
   }, []);
+
+  useEffect(() => {
+    if (highlightedRecordId) {
+      setExpandedRecord(highlightedRecordId);
+      setTimeout(() => {
+        const element = document.getElementById(`record-${highlightedRecordId}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  }, [highlightedRecordId]);
 
   const fetchRecords = async () => {
     const { data, error } = await supabase
@@ -124,7 +136,7 @@ export default function TimelineView({ session }) {
                 const hasAbnormal = record.extracted_data?.data?.some(d => d.isAbnormal);
 
                 return (
-                  <div key={record.id} className="timeline-item">
+                  <div key={record.id} id={`record-${record.id}`} className="timeline-item">
                     <div className="timeline-marker"></div>
                     
                     <div 
