@@ -19,8 +19,6 @@ const getAiClient = () => {
  * @returns {Promise<Object>} The extracted JSON structure
  */
 export async function extractDocumentData(base64Data, mimeType) {
-  const apiKey = getApiKey();
-  
   const prompt = `
 You are a highly intelligent medical data extraction assistant.
 Analyze the following image (which may be a lab report, prescription, or pharmacy receipt).
@@ -93,8 +91,6 @@ Carefully check numerical values against reference ranges and flag "isAbnormal":
  * @returns {Promise<string>} The synthesized answer
  */
 export async function chatWithRecords(query, records, targetLanguage = 'English', isOrganizer = false) {
-  const apiKey = getApiKey();
-  
   const context = records.map(r => `
 ---
 ID: ${r.id}
@@ -227,8 +223,6 @@ export async function generateSpeech(text, languageCode) {
  * @returns {Promise<Object>} The structured health summary
  */
 export async function generateHealthSummary(profile, records) {
-  const apiKey = getApiKey();
-  
   const recordsContext = records.map(r => `
 ---
 Record Date: ${r.record_date}
