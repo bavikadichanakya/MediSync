@@ -73,7 +73,12 @@ export default function AIOrganizerView({ session }) {
       const answer = await chatWithRecords(userMsg, allRecords, 'English', true);
       setChatMessages(prev => [...prev, { role: 'assistant', content: answer }]);
     } catch (err) {
-      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error connecting to the brain.' }]);
+      console.error("Chat error:", err);
+      let errorMessage = 'Sorry, I encountered an error connecting to the brain.';
+      if (err.status === 429 || (err.message && err.message.includes('429')) || (err.message && err.message.includes('quota'))) {
+        errorMessage = 'Sorry, the AI quota has been exceeded. Please try again later.';
+      }
+      setChatMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
     } finally {
       setIsChatLoading(false);
     }

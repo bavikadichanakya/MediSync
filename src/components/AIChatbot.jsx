@@ -208,7 +208,12 @@ export default function AIChatbot({ session }) {
       }
       
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error connecting to the brain.' }]);
+      console.error("Chat error:", err);
+      let errorMessage = 'Sorry, I encountered an error connecting to the brain.';
+      if (err.status === 429 || (err.message && err.message.includes('429')) || (err.message && err.message.includes('quota'))) {
+        errorMessage = 'Sorry, the AI quota has been exceeded. Please try again later.';
+      }
+      setMessages(prev => [...prev, { role: 'assistant', content: errorMessage }]);
     } finally {
       setIsLoading(false);
     }
